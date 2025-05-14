@@ -80,6 +80,7 @@ import {
 import { researchStore } from "@/utils/storage";
 import { cn } from "@/utils/style";
 import { omit, capitalize } from "radash";
+import locales from "@/constants/locales";
 
 type SettingProps = {
   open: boolean;
@@ -3171,8 +3172,11 @@ function Setting({ open, onClose }: SettingProps) {
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="en-US">English</SelectItem>
-                            <SelectItem value="zh-CN">简体中文</SelectItem>
+                            {Object.entries(locales).map(([code, name]: [string, string]) => (
+                              <SelectItem key={code} value={code}>
+                                {name}
+                              </SelectItem>
+                            ))}
                           </SelectContent>
                         </Select>
                       </FormControl>

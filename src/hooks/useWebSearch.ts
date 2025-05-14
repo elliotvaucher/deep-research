@@ -267,44 +267,74 @@ function useWebSearch() {
     const firecrawlKey = multiApiKeyPolling(firecrawlApiKey);
 
     const languageMeta = language.split("-");
-    const response = await fetch(
-      mode === "local"
-        ? `${completePath(
-            firecrawlApiProxy || FIRECRAWL_BASE_URL,
-            "/v1"
-          )}/search`
-        : "/api/search/firecrawl/v1/search",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${
-            mode === "local" ? firecrawlKey : accessKey
-          }`,
-        },
-        credentials: "omit",
-        body: JSON.stringify({
-          query,
-          lang: languageMeta[0].toLowerCase(),
-          country: languageMeta[1].toLowerCase(),
-          limit: searchMaxResult,
-          origin: "api",
-          scrapeOptions: {
-            formats: ["markdown"],
-          },
-          timeout: 60000,
-          ...options,
-        }),
+    
+    // Add retry logic
+    const maxRetries = 3;
+    let retries = 0;
+    let lastError;
+    
+    while (retries < maxRetries) {
+      try {
+        const response = await fetch(
+          mode === "local"
+            ? `${completePath(
+                firecrawlApiProxy || FIRECRAWL_BASE_URL,
+                "/v1"
+              )}/search`
+            : "/api/search/firecrawl/v1/search",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${
+                mode === "local" ? firecrawlKey : accessKey
+              }`,
+            },
+            credentials: "omit",
+            body: JSON.stringify({
+              query,
+              lang: languageMeta[0].toLowerCase(),
+              country: languageMeta[1].toLowerCase(),
+              limit: searchMaxResult,
+              origin: "api",
+              scrapeOptions: {
+                formats: ["markdown"],
+              },
+              timeout: 30000, // Reduced timeout to prevent long hanging requests
+              ...options,
+            }),
+            // Add signal with timeout
+            signal: AbortSignal.timeout(40000),
+          }
+        );
+        
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`Firecrawl API error: ${response.status} - ${errorText}`);
+        }
+        
+        const data = await response.json();
+        return ((data?.data || []) as FirecrawlDocument[])
+          .filter((item) => item.description && item.url)
+          .map((result) => ({
+            content: result.markdown || result.description,
+            url: result.url,
+            title: result.title,
+          })) as Source[];
+      } catch (error) {
+        lastError = error;
+        console.error(`Firecrawl API error (attempt ${retries + 1}/${maxRetries}):`, error);
+        retries++;
+        if (retries < maxRetries) {
+          // Wait before retrying (exponential backoff)
+          await new Promise(resolve => setTimeout(resolve, 1000 * retries));
+        }
       }
-    );
-    const { data = [] } = await response.json();
-    return (data as FirecrawlDocument[])
-      .filter((item) => item.description && item.url)
-      .map((result) => ({
-        content: result.markdown || result.description,
-        url: result.url,
-        title: result.title,
-      })) as Source[];
+    }
+    
+    // If all retries failed, return empty array
+    console.error(`All Firecrawl API attempts failed:`, lastError);
+    return [];
   }
 
   async function exa(query: string, options: ExaSearchOptions = {}) {

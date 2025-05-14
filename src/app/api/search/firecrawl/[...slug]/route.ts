@@ -16,6 +16,28 @@ export const preferredRegion = [
 const API_PROXY_BASE_URL =
   process.env.FIRECRAWL_API_BASE_URL || FIRECRAWL_BASE_URL;
 
+// Helper function for retries
+async function fetchWithRetry(url: string, payload: RequestInit, maxRetries = 3) {
+  let lastError;
+  
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      const response = await fetch(url, payload);
+      return response;
+    } catch (error) {
+      console.error(`Attempt ${attempt + 1}/${maxRetries} failed:`, error);
+      lastError = error;
+      // Only wait if we're going to retry
+      if (attempt < maxRetries - 1) {
+        // Exponential backoff
+        await new Promise(resolve => setTimeout(resolve, 1000 * (attempt + 1)));
+      }
+    }
+  }
+  
+  throw lastError;
+}
+
 export async function POST(req: NextRequest) {
   const body = await req.json();
   const searchParams = req.nextUrl.searchParams;
@@ -33,12 +55,14 @@ export async function POST(req: NextRequest) {
         Authorization: req.headers.get("Authorization") || "",
       },
       body: JSON.stringify(body),
+      signal: AbortSignal.timeout(30000),
     };
-    const response = await fetch(url, payload);
+    
+    const response = await fetchWithRetry(url, payload);
     return new NextResponse(response.body, response);
   } catch (error) {
     if (error instanceof Error) {
-      console.error(error);
+      console.error(`Firecrawl API error: ${error.message}`, error);
       return NextResponse.json(
         { code: 500, message: error.message },
         { status: 500 }

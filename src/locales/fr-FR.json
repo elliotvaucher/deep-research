@@ -1,0 +1,299 @@
+{
+  "title": "Recherche Approfondie",
+  "theme": "Thème",
+  "openSource": "Open Source",
+  "copyright": "Créé avec ❤️ par l'équipe {{name}}",
+  "searchPlaceholder": "Veuillez saisir des mots-clés",
+  "research": {
+    "common": {
+      "startThinking": "Commencer à Réfléchir",
+      "rethinking": "Repenser",
+      "thinkingQuestion": "Réflexion sur la Question...",
+      "writeReportPlan": "Rédiger un Plan de Rapport",
+      "rewriteReportPlan": "Réécrire le Plan de Rapport",
+      "startResearch": "Commencer la Recherche",
+      "restartResearch": "Redémarrer la Recherche",
+      "writeReport": "Rédiger le Rapport",
+      "continueResearch": "Continuer la Recherche",
+      "indepthResearch": "Recherche Approfondie",
+      "rewriteReport": "Réécrire le Rapport",
+      "sources": "Sources",
+      "thinking": "Réflexion en cours...",
+      "research": "Recherche en cours...",
+      "writing": "Rédaction en cours...",
+      "newResearch": "Nouvelle Recherche",
+      "addToKnowledgeBase": "Ajouter à la Base de Connaissances",
+      "addToKnowledgeBaseTip": "Ajouté à la Base de Connaissances",
+      "restudy": "Réétudier",
+      "edit": "Modifier",
+      "save": "Enregistrer",
+      "copy": "Copier",
+      "export": "Exporter",
+      "delete": "Supprimer"
+    },
+    "topic": {
+      "title": "1. Sujets de Recherche",
+      "topicLabel": "1.1 Sujets de recherche",
+      "topicPlaceholder": "Toute question que vous souhaitez explorer..."
+    },
+    "feedback": {
+      "title": "2. Poser une Question",
+      "emptyTip": "En attente du sujet de recherche...",
+      "feedbackLabel": "Votre Réponse (Optionnelle)",
+      "feedbackPlaceholder": "Vous pouvez répondre ce que vous voulez...",
+      "questions": "2.1 Questions du Système",
+      "reportPlan": "2.2 Plan du rapport de recherche"
+    },
+    "searchResult": {
+      "title": "3. Collecte d'Informations",
+      "emptyTip": "En attente de la tâche de recherche...",
+      "suggestionLabel": "Suggestions de recherche (Optionnelles)",
+      "suggestionPlaceholder": "Faut-il ajouter ou ajuster les directions de recherche...",
+      "references": "Références"
+    },
+    "finalReport": {
+      "title": "4. Rapport Final",
+      "emptyTip": "En attente de la compilation des données...",
+      "researchedInfor": "Recherche effectuée sur {{total}} sites web",
+      "localResearchedInfor": "Recherche effectuée sur {{total}} ressources locales",
+      "writingRequirementLabel": "Exigences de rédaction (optionnelles)",
+      "writingRequirementPlaceholder": "Vous pouvez formuler toute demande liée à la rédaction du rapport."
+    }
+  },
+  "history": {
+    "title": "Historique",
+    "description": "L'historique de recherche est stocké localement dans le navigateur et ne sauvegarde que les recherches terminées.",
+    "name": "Titre",
+    "emptyTip": "Aucun historique",
+    "date": "Date",
+    "actions": "Action",
+    "import": "Importer",
+    "importTip": "Importer une Recherche",
+    "importSuccess": "{{title}} importé avec succès.",
+    "importFailed": "Échec de l'importation de {{title}}.",
+    "load": "Charger",
+    "export": "Exporter",
+    "delete": "Supprimer",
+    "loadMore": "Charger Plus d'Historique",
+    "close": "Fermer",
+    "noHistory": "Aucun historique"
+  },
+  "knowledge": {
+    "title": "Base de Connaissances Locale",
+    "description": "Une base de connaissances stockée localement dans le navigateur.",
+    "create": "Créer",
+    "createTip": "Créer une nouvelle connaissance",
+    "emptyTip": "Aucun Contenu",
+    "name": "Nom",
+    "size": "Taille",
+    "date": "Date",
+    "action": "Action",
+    "add": "Ajouter",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "loadMore": "Charger Plus de Connaissances",
+    "resource": "Ressource",
+    "fileInfor": "Téléchargé par l'utilisateur le {{createdAt}}.",
+    "urlInfor": "Récupéré par l'utilisateur le {{createdAt}}.",
+    "createInfor": "Créé par l'utilisateur le {{createdAt}}.",
+    "webCrawler": "Explorateur Web",
+    "webCrawlerTip": "L'explorateur web obtient le contenu de la page de l'URL spécifiée via le serveur et renvoie les données au format Markdown.",
+    "urlPlaceholder": "Veuillez saisir l'URL...",
+    "urlError": "Veuillez saisir une URL valide",
+    "localCrawler": "Explorateur Local",
+    "clear": "Effacer",
+    "fetch": "Récupérer",
+    "localResourceTitle": "1.2 Ressources de recherche locales (optionnel)",
+    "addResource": "Ajouter une Ressource",
+    "addResourceMessage": "{{title}} a été ajouté à la ressource.",
+    "resourceNotFound": "Ressource non trouvée",
+    "knowledge": "Connaissance",
+    "localFile": "Fichier Local",
+    "webPage": "Page Web",
+    "editor": {
+      "title": "Titre",
+      "titlePlaceholder": "Veuillez saisir un titre...",
+      "content": "Contenu (Markdown)",
+      "back": "Retour",
+      "reset": "Réinitialiser",
+      "submit": "Soumettre"
+    }
+  },
+  "artifact": {
+    "AIWrite": "Rédaction IA",
+    "writingPromptTip": "Veuillez saisir des instructions d'écriture...",
+    "readingLevel": "Niveau de Lecture",
+    "PhD": "Doctorat",
+    "college": "Université",
+    "teenager": "Adolescent",
+    "child": "Enfant",
+    "pirate": "Pirate",
+    "adjustLength": "Ajuster la Longueur",
+    "longest": "Très Long",
+    "long": "Long",
+    "shorter": "Court",
+    "shortest": "Très Court",
+    "translate": "Traduire",
+    "continuation": "Continuer",
+    "addEmojis": "Ajouter des Émojis",
+    "send": "Envoyer"
+  },
+  "editor": {
+    "copy": "Copier",
+    "tooltip": {
+      "bold": "Gras",
+      "italic": "Italique",
+      "strikethrough": "Barré",
+      "code": "Code",
+      "math": "Mathématiques",
+      "link": "Lien",
+      "quote": "Citation"
+    },
+    "slash": {
+      "heading": {
+        "name": "Titre",
+        "description": "Insérer un Titre"
+      },
+      "h1": {
+        "name": "Titre 1",
+        "description": "Insérer un Titre 1"
+      },
+      "h2": {
+        "name": "Titre 2",
+        "description": "Insérer un Titre 2"
+      },
+      "h3": {
+        "name": "Titre 3",
+        "description": "Insérer un Titre 3"
+      },
+      "h4": {
+        "name": "Titre 4",
+        "description": "Insérer un Titre 4"
+      },
+      "h5": {
+        "name": "Titre 5",
+        "description": "Insérer un Titre 5"
+      },
+      "h6": {
+        "name": "Titre 6",
+        "description": "Insérer un Titre 6"
+      },
+      "list": {
+        "name": "Liste",
+        "description": "Insérer une Liste"
+      },
+      "ul": {
+        "name": "Liste à Puces",
+        "description": "Insérer un Élément de Liste à Puces"
+      },
+      "ol": {
+        "name": "Liste Ordonnée",
+        "description": "Insérer un Élément de Liste Ordonnée"
+      },
+      "todo": {
+        "name": "Liste de Tâches",
+        "description": "Insérer un Élément de Liste de Tâches"
+      },
+      "advanced": {
+        "name": "Avancé",
+        "description": "Commandes Avancées"
+      },
+      "link": {
+        "name": "Lien",
+        "description": "Insérer un Lien"
+      },
+      "image": {
+        "name": "Image",
+        "description": "Insérer une Image"
+      },
+      "code": {
+        "name": "Bloc de Code",
+        "description": "Insérer un Bloc de Code"
+      },
+      "math": {
+        "name": "Bloc Mathématique",
+        "description": "Insérer un Bloc Mathématique"
+      },
+      "table": {
+        "name": "Tableau",
+        "description": "Insérer un Tableau 3x3"
+      },
+      "quote": {
+        "name": "Citation",
+        "description": "Insérer une Citation"
+      },
+      "horizontal": {
+        "name": "Ligne Horizontale",
+        "description": "Insérer une Ligne Horizontale"
+      }
+    },
+    "placeholder": "Veuillez saisir du texte, ou saisir \"/ \" pour utiliser les commandes"
+  },
+  "setting": {
+    "title": "Paramètres",
+    "description": "Tous les paramètres sont enregistrés dans le navigateur de l'utilisateur.",
+    "model": "Modèle",
+    "general": "Général",
+    "provider": "Fournisseur d'IA",
+    "providerTip": "Fournisseur de services d'IA. Pour les services d'agrégation d'IA tels que One Api et New Api, veuillez sélectionner `Compatible OpenAI`.",
+    "openAICompatible": "Compatible OpenAI",
+    "free": "Gratuit",
+    "mode": "Mode API",
+    "modeTip": "En mode local, toutes les requêtes sont envoyées directement par le navigateur. En mode proxy, toutes les requêtes sont transmises via le serveur.",
+    "local": "Local",
+    "proxy": "Proxy",
+    "apiKeyLabel": "Clé Api",
+    "apiKeyPlaceholder": "Veuillez saisir la clé API du modèle",
+    "apiUrlLabel": "URL de Base de l'Api",
+    "apiUrlPlaceholder": "Veuillez saisir l'URL de base de l'API",
+    "resourceNameLabel": "Nom de la Ressource",
+    "resourceNamePlaceholder": "Veuillez saisir le nom de la ressource",
+    "apiVersionLabel": "Version de l'Api",
+    "apiVersionPlaceholder": "Veuillez saisir la version de l'API",
+    "accessPassword": "Mot de Passe d'Accès",
+    "accessPasswordPlaceholder": "Veuillez saisir le mot de passe d'accès au serveur",
+    "accessPasswordTip": "L'authentification API côté serveur empêche l'API d'être utilisée abusivement par des applications externes.",
+    "thinkingModel": "Modèle de Réflexion",
+    "thinkingModelTip": "Le modèle central utilisé dans la recherche approfondie, il est recommandé d'utiliser le modèle de réflexion.",
+    "networkingModel": "Modèle de Tâche",
+    "networkingModelTip": "Le modèle utilisé pour les tâches secondaires, les modèles à haute production sont recommandés.",
+    "recommendedModels": "Modèles Recommandés",
+    "basicModels": "Modèles de Base",
+    "modelListLoadingPlaceholder": "Veuillez sélectionner un modèle",
+    "modelListPlaceholder": "Veuillez saisir le nom du modèle",
+    "refresh": "Cliquez pour Actualiser les Modèles",
+    "modelListLoading": "Chargement de la liste des modèles",
+    "search": "Recherche",
+    "webSearch": "Recherche Web",
+    "webSearchTip": "La recherche web peut obtenir les données les plus récentes et aide à réduire les \"hallucinations\" du modèle. Il est recommandé de l'activer.",
+    "enable": "Activer",
+    "disable": "Désactiver",
+    "searchProvider": "Fournisseur de Recherche",
+    "searchProviderTip": "Fournisseurs de services de recherche. Certains modèles ont des capacités de recherche réseau intégrées, tandis que la plupart des modèles doivent s'appuyer sur des moteurs de recherche tiers pour atteindre des capacités de mise en réseau.",
+    "modelBuiltin": "Intégré au modèle",
+    "bocha": "Bocha",
+    "parallelSearch": "Recherche Parallèle",
+    "parallelSearchTip": "La recherche parallèle aide à accélérer le processus de collecte de données, mais un taux trop élevé peut déclencher la limite de requêtes par minute du modèle.",
+    "searchResults": "Résultats de Recherche",
+    "searchResultsTip": "Le nombre maximum de recherches web. Certains moteurs de recherche ne prennent pas en charge ce paramètre.",
+    "searchApiKeyPlaceholder": "Veuillez saisir votre Clé Api",
+    "searchScope": "Portée de la Recherche",
+    "all": "Tout",
+    "academic": "Académique",
+    "language": "Langue",
+    "languageTip": "Le système sélectionnera automatiquement la langue de l'interface en fonction de la langue du navigateur de l'utilisateur. Cela affectera également la langue de réponse du modèle d'IA.",
+    "system": "Système",
+    "light": "Clair",
+    "dark": "Sombre",
+    "debug": "Débogage",
+    "debugTip": "Le débogage du système peut aider les utilisateurs à capturer les exceptions de requête et à localiser les erreurs inconnues. Normalement, il n'est pas nécessaire de l'activer.",
+    "resetSetting": "Réinitialiser les Paramètres",
+    "resetAllSettings": "Réinitialiser les paramètres et effacer le cache",
+    "resetSettingWarning": "Cette opération effacera toutes les données et initialisera le projet.",
+    "version": "Version actuelle",
+    "checkForUpdate": "Vérifier les mises à jour",
+    "save": "Enregistrer",
+    "confirm": "Confirmer",
+    "cancel": "Annuler"
+  }
+} 

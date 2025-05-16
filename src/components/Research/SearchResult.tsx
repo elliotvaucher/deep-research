@@ -58,7 +58,7 @@ function TaskState({ state }: { state: SearchTask["state"] }) {
 function SearchResult() {
   const { t } = useTranslation();
   const taskStore = useTaskStore();
-  const { status, runSearchTask, reviewSearchResult } = useDeepResearch();
+  const { runSearchTask, reviewSearchResult } = useDeepResearch();
   const { generateId } = useKnowledge();
   const {
     formattedTime,
@@ -153,27 +153,37 @@ function SearchResult() {
   }, [taskStore.suggestion, form]);
 
   return (
-    <section className="p-4 border rounded-md mt-4 print:hidden">
-      <h3 className="font-semibold text-lg border-b mb-2 leading-10">
+    <section className="p-6 border rounded-xl bg-white/70 dark:bg-slate-900/70 backdrop-blur-sm transition-all relative overflow-hidden">
+      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-secondary via-chart-4 to-accent"></div>
+      <h3 className="font-bold text-xl border-b pb-3 mb-4 leading-10">
         {t("research.searchResult.title")}
       </h3>
       {taskStore.tasks.length === 0 ? (
-        <div>{t("research.searchResult.emptyTip")}</div>
+        <div className="text-muted-foreground text-center py-6">
+          <TextSearch className="w-10 h-10 mx-auto mb-3 opacity-50" />
+          {t("research.searchResult.emptyTip")}
+        </div>
       ) : (
         <div>
           <Accordion className="mb-4" type="multiple">
             {taskStore.tasks.map((item, idx) => {
               return (
-                <AccordionItem key={idx} value={item.query}>
-                  <AccordionTrigger>
-                    <div className="flex">
-                      <TaskState state={item.state} />
-                      <span className="ml-1">{item.query}</span>
+                <AccordionItem key={idx} value={item.query} className="border rounded-lg mb-3 overflow-hidden border-muted">
+                  <AccordionTrigger className="px-4 py-2 hover:bg-secondary/5 transition-colors accordion-trigger">
+                    <div className="flex items-center">
+                      <div className={`p-1 rounded-full mr-2 ${
+                        item.state === "completed" ? "bg-secondary/20 text-secondary" : 
+                        item.state === "processing" ? "bg-primary/20 text-primary" : 
+                        "bg-muted text-muted-foreground"
+                      }`}>
+                        <TaskState state={item.state} />
+                      </div>
+                      <span className="font-medium">{item.query}</span>
                     </div>
                   </AccordionTrigger>
-                  <AccordionContent className="prose prose-slate dark:prose-invert max-w-full min-h-20">
+                  <AccordionContent className="prose prose-slate dark:prose-invert max-w-full min-h-20 p-4 bg-white/30 dark:bg-slate-800/30 backdrop-blur-sm">
                     <MagicDownView>{`> ${item.researchGoal}`}</MagicDownView>
-                    <Separator className="mb-4" />
+                    <Separator className="my-4" />
                     <MagicDown
                       value={item.learning}
                       onChange={(value) =>
@@ -185,7 +195,7 @@ function SearchResult() {
                             <Separator className="dark:bg-slate-700" />
                           </div>
                           <Button
-                            className="float-menu-button"
+                            className="float-menu-button text-chart-4 hover:text-chart-4 hover:bg-chart-4/10"
                             type="button"
                             size="icon"
                             variant="ghost"
@@ -199,22 +209,7 @@ function SearchResult() {
                             <RotateCcw />
                           </Button>
                           <Button
-                            className="float-menu-button"
-                            type="button"
-                            size="icon"
-                            variant="ghost"
-                            title={t("research.common.delete")}
-                            side="left"
-                            sideoffset={8}
-                            onClick={() => handleRemove(item.query)}
-                          >
-                            <Trash />
-                          </Button>
-                          <div className="px-1">
-                            <Separator className="dark:bg-slate-700" />
-                          </div>
-                          <Button
-                            className="float-menu-button"
+                            className="float-menu-button text-secondary hover:text-secondary hover:bg-secondary/10"
                             type="button"
                             size="icon"
                             variant="ghost"
@@ -226,11 +221,11 @@ function SearchResult() {
                             <NotebookText />
                           </Button>
                           <Button
-                            className="float-menu-button"
+                            className="float-menu-button text-accent hover:text-accent hover:bg-accent/10"
                             type="button"
                             size="icon"
                             variant="ghost"
-                            title={t("research.common.export")}
+                            title={t("research.common.exportToMarkdown")}
                             side="left"
                             sideoffset={8}
                             onClick={() =>
@@ -243,76 +238,92 @@ function SearchResult() {
                           >
                             <Download />
                           </Button>
+                          <Button
+                            className="float-menu-button text-destructive hover:text-destructive hover:bg-destructive/10"
+                            type="button"
+                            size="icon"
+                            variant="ghost"
+                            title={t("research.common.removeTask")}
+                            side="left"
+                            sideoffset={8}
+                            onClick={() => handleRemove(item.query)}
+                          >
+                            <Trash />
+                          </Button>
                         </>
                       }
-                    ></MagicDown>
-                    {item.sources?.length > 0 ? (
-                      <>
-                        <hr className="my-6" />
-                        <h4>{t("research.common.sources")}</h4>
-                        <ol>
-                          {item.sources.map((source, idx) => {
-                            return (
-                              <li className="ml-2" key={idx}>
-                                <a href={source.url} target="_blank">
-                                  {source.title || source.url}
-                                </a>
-                              </li>
-                            );
-                          })}
-                        </ol>
-                      </>
-                    ) : null}
+                    />
+                    {item.sources && item.sources.length > 0 && (
+                      <div className="mt-4 pt-4 border-t">
+                        <h4 className="font-bold text-sm mb-2 text-primary">
+                          {t("research.common.sources")}
+                        </h4>
+                        <ul className="pl-6 list-disc text-sm leading-relaxed text-muted-foreground space-y-1">
+                          {item.sources.map((source, idx) => (
+                            <li key={idx}>
+                              <a
+                                href={source.url}
+                                target="_blank"
+                                className="break-all hover:text-primary transition-colors"
+                              >
+                                {source.title || source.url}
+                              </a>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
                   </AccordionContent>
                 </AccordionItem>
               );
             })}
           </Accordion>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(handleSubmit)}>
-              <FormField
-                control={form.control}
-                name="suggestion"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="mb-2 font-semibold">
-                      {t("research.searchResult.suggestionLabel")}
-                    </FormLabel>
-                    <FormControl>
-                      <Textarea
-                        rows={3}
-                        placeholder={t(
-                          "research.searchResult.suggestionPlaceholder"
-                        )}
-                        disabled={isThinking}
-                        {...field}
-                      />
-                    </FormControl>
-                  </FormItem>
-                )}
-              />
-              <Button
-                className="w-full mt-4"
-                type="submit"
-                variant="default"
-                disabled={isThinking}
-              >
-                {isThinking ? (
-                  <>
-                    <LoaderCircle className="animate-spin" />
-                    <span>{status}</span>
-                    <small className="font-mono">{formattedTime}</small>
-                  </>
-                ) : taskFinished ? (
-                  t("research.common.indepthResearch")
-                ) : (
-                  t("research.common.continueResearch")
-                )}
-              </Button>
-            </form>
-          </Form>
         </div>
       )}
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(handleSubmit)}>
+          {taskFinished ? (
+            <FormField
+              control={form.control}
+              name="suggestion"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="mb-2 text-base font-bold text-primary">
+                    {t("research.searchResult.suggestionLabel")}
+                  </FormLabel>
+                  <FormControl>
+                    <Textarea
+                      rows={2}
+                      placeholder={t("research.searchResult.suggestionPlaceholder")}
+                      className="rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all resize-none"
+                      {...field}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          ) : null}
+          <Button 
+            className="w-full mt-4 rounded-lg font-medium text-base py-6 bg-gradient-to-r from-secondary to-chart-4 hover:shadow-md hover:shadow-secondary/20 hover:from-secondary hover:to-secondary transition-all" 
+            disabled={isThinking} 
+            type="submit"
+          >
+            {isThinking ? (
+              <>
+                <LoaderCircle className="animate-spin mr-2" />
+                <span>{t("research.common.thinking")}</span>
+                <small className="font-mono ml-2">{formattedTime}</small>
+              </>
+            ) : taskFinished ? (
+              t("research.common.reviewSearchResult")
+            ) : unfinishedTasks.length > 0 ? (
+              t("research.common.continueSearch")
+            ) : (
+              t("research.common.startSearch")
+            )}
+          </Button>
+        </form>
+      </Form>
     </section>
   );
 }

@@ -36,18 +36,18 @@ function Home() {
     setTheme(settingStore.theme);
   }, [theme, setTheme]);
   return (
-    <div className="max-lg:max-w-screen-md max-w-screen-lg mx-auto px-4">
+    <div className="max-lg:max-w-screen-md max-w-screen-lg mx-auto px-6 pb-6">
       <Header />
-      <main>
+      <main className="space-y-6">
         <Topic />
         <Feedback />
         <SearchResult />
         <FinalReport />
       </main>
-      <footer className="my-4 text-center text-sm text-gray-600 print:hidden">
-        <a href="https://github.com/u14app/" target="_blank">
+      <footer className="my-6 text-center text-sm font-medium text-primary/80 print:hidden">
+        <a href="https://www.ritsl.com" target="_blank" className="hover:text-primary transition-colors">
           {t("copyright", {
-            name: "U14App",
+            name: "RITSL",
           })}
         </a>
       </footer>

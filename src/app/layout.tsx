@@ -10,8 +10,8 @@ import "./globals.css";
 const HEAD_SCRIPTS = process.env.HEAD_SCRIPTS as string;
 
 export const metadata: Metadata = {
-  title: "Deep Research",
-  description: "Use any LLMs (Large Language Models) for Deep Research.",
+  title: "Creatives - Audit assistant",
+  description: "Research assistant for marketing and advertising",
   icons: {
     icon: {
       type: "image/svg+xml",

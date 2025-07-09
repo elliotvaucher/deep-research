@@ -8,11 +8,11 @@ import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
 const HEAD_SCRIPTS = process.env.HEAD_SCRIPTS as string;
-const APP_NAME = "Deep Research";
-const APP_DEFAULT_TITLE = "Deep Research";
+const APP_NAME = "Creatives - Audit Assistant";
+const APP_DEFAULT_TITLE = "Creatives - Audit Assistant";
 const APP_TITLE_TEMPLATE = "%s - PWA App";
 const APP_DESCRIPTION =
-  "Use any LLMs (Large Language Models) for Deep Research.";
+  "Assistant Deep Research de création d'audits marketiong et publicitaires";
 
 export const metadata: Metadata = {
   applicationName: APP_NAME,

@@ -81,7 +81,6 @@ import {
 import { researchStore } from "@/utils/storage";
 import { cn } from "@/utils/style";
 import { omit, capitalize } from "radash";
-import locales from "@/constants/locales";
 
 type SettingProps = {
   open: boolean;

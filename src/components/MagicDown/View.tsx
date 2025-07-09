@@ -1,6 +1,7 @@
 import dynamic from "next/dynamic";
 import { useMemo, memo } from "react";
-import Markdown, { type Options } from "react-markdown";
+import ReactMarkdown, { type Options, type Components } from "react-markdown";
+import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import remarkBreaks from "remark-breaks";
@@ -11,12 +12,18 @@ import { omit } from "radash";
 
 import "katex/dist/katex.min.css";
 import "./style.css";
-import "./highlight.css";
 
 const Code = dynamic(() => import("./Code"));
 const Mermaid = dynamic(() => import("./Mermaid"));
 
-function Magicdown({ children: content, ...rest }: Options) {
+export type MarkdownProps = {
+  id?: string;
+  className?: string;
+  children: string;
+  components?: Partial<Components>;
+};
+
+function MarkdownBlock({ children: content, ...rest }: Options) {
   const remarkPlugins = useMemo(
     () => rest.remarkPlugins ?? [],
     [rest.remarkPlugins]
@@ -28,14 +35,16 @@ function Magicdown({ children: content, ...rest }: Options) {
   const components = useMemo(() => rest.components ?? {}, [rest.components]);
 
   return (
-    <Markdown
+    <ReactMarkdown
       {...rest}
       remarkPlugins={[remarkGfm, remarkMath, remarkBreaks, ...remarkPlugins]}
       rehypePlugins={[
+        rehypeRaw,
         [rehypeHighlight, { detect: true, ignoreMissing: true }],
         rehypeKatex,
         ...rehypePlugins,
       ]}
+      disallowedElements={["script", "form"]}
       components={{
         pre: (props) => {
           const { children, className, ...rest } = props;
@@ -50,13 +59,31 @@ function Magicdown({ children: content, ...rest }: Options) {
         },
         code: (props) => {
           const { children, className, ...rest } = props;
+          const isInline =
+            !props.node?.position?.start.line ||
+            props.node?.position?.start.line === props.node?.position?.end.line;
+
+          if (isInline) {
+            return (
+              <span
+                className={clsx(
+                  "bg-primary-foreground rounded-sm px-1 font-mono text-sm",
+                  className
+                )}
+                {...props}
+              >
+                {children}
+              </span>
+            );
+          }
+
           if (className?.includes("hljs")) {
             const lang = /language-(\w+)/.exec(className || "");
             if (lang && lang[1] === "mermaid") {
               return <Mermaid>{children}</Mermaid>;
             }
             return (
-              <Code lang={lang ? lang[1] : ""}>
+              <Code lang={lang ? lang[1] : "plaintext"}>
                 <code
                   {...omit(rest, ["node"])}
                   className={clsx("break-all", className)}
@@ -107,12 +134,33 @@ function Magicdown({ children: content, ...rest }: Options) {
             </a>
           );
         },
+        img: (props) => {
+          const { className, src, alt, ...rest } = props;
+          return (
+            <picture
+              className={clsx(
+                "my-2 flex justify-center items-center w-4/5 max-sm:w-full h-[50vw] max-sm:h-80 m-auto",
+                className
+              )}
+            >
+              <img
+                className="size-full object-cover rounded transition-all duration-200 ease-out"
+                {...omit(rest, ["node"])}
+                src={src}
+                alt={alt}
+                title={alt}
+                referrerPolicy="no-referrer"
+                rel="noopener noreferrer"
+              />
+            </picture>
+          );
+        },
         ...components,
       }}
     >
       {content}
-    </Markdown>
+    </ReactMarkdown>
   );
 }
 
-export default memo(Magicdown);
+export default memo(MarkdownBlock);

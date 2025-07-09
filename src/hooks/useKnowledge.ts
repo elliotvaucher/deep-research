@@ -1,4 +1,4 @@
-import { streamText } from "ai";
+import { streamText, smoothStream } from "ai";
 import { Md5 } from "ts-md5";
 import { toast } from "sonner";
 import useModelProvider from "@/hooks/useAiProvider";
@@ -6,27 +6,24 @@ import { useKnowledgeStore } from "@/store/knowledge";
 import { useTaskStore } from "@/store/task";
 import { useSettingStore } from "@/store/setting";
 import { rewritingPrompt } from "@/constants/prompts";
+import { jinaReader, localCrawler } from "@/utils/crawler";
 import { fileParser } from "@/utils/parser";
-import { generateSignature } from "@/utils/signature";
 import { getTextByteSize } from "@/utils/file";
+import {
+  splitText,
+  containsXmlHtmlTags,
+  ThinkTagStreamProcessor,
+} from "@/utils/text";
 import { parseError } from "@/utils/error";
 import { omit } from "radash";
 
-interface CrawlerResult {
-  url: string;
-  title: string;
-  content: string;
-}
+const MAX_CHUNK_LENGTH = 10000;
 
-interface ReaderResult extends CrawlerResult {
-  warning?: string;
-  title: string;
-  description: string;
-  url: string;
-  content: string;
-  usage: {
-    tokens: number;
-  };
+function smoothTextStream(type: "character" | "word" | "line") {
+  return smoothStream({
+    chunking: type === "character" ? /./ : type,
+    delayInMs: 0,
+  });
 }
 
 function handleError(error: unknown) {
@@ -34,40 +31,9 @@ function handleError(error: unknown) {
   toast.error(errorMessage);
 }
 
-async function jinaReader(url: string) {
-  const response = await fetch("https://r.jina.ai", {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ url }),
-  });
-
-  const { data }: { data: ReaderResult } = await response.json();
-  if (data.warning) {
-    throw new Error(data.warning);
-  }
-  return omit(data, ["usage", "description"]) as CrawlerResult;
-}
-
-async function localCrawler(url: string) {
-  const { accessPassword } = useSettingStore.getState();
-  const accessKey = generateSignature(accessPassword, Date.now());
-  const response = await fetch("/api/crawler", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${accessKey}`,
-    },
-    body: JSON.stringify({ url }),
-  });
-  const result: CrawlerResult = await response.json();
-  return result;
-}
-
 function useKnowledge() {
-  const { createProvider, getModel } = useModelProvider();
+  const { smoothTextStreamType } = useSettingStore();
+  const { createModelProvider, getModel } = useModelProvider();
   const knowledgeStore = useKnowledgeStore();
 
   function generateId(
@@ -106,6 +72,54 @@ function useKnowledge() {
     if (isExist) {
       return toast.message(`File already exist: ${file.name}`);
     }
+
+    async function extractText(rid: string, title: string, text: string) {
+      const { networkingModel } = getModel();
+
+      let content = "";
+      let reasoning = "";
+      const thinkTagStreamProcessor = new ThinkTagStreamProcessor();
+      const result = streamText({
+        model: await createModelProvider(networkingModel),
+        prompt: text,
+        system: rewritingPrompt,
+        onFinish: () => {
+          const currentTime = Date.now();
+          knowledgeStore.save({
+            id: rid,
+            title,
+            content,
+            type: "file",
+            fileMeta,
+            createdAt: currentTime,
+            updatedAt: currentTime,
+          });
+        },
+        experimental_transform: smoothTextStream(smoothTextStreamType),
+        onError: (err) => {
+          updateResource(id, { status: "failed" });
+          handleError(err);
+        },
+      });
+      for await (const part of result.fullStream) {
+        if (part.type === "text-delta") {
+          thinkTagStreamProcessor.processChunk(
+            part.textDelta,
+            (data) => {
+              content += data;
+            },
+            (data) => {
+              reasoning += data;
+            }
+          );
+        } else if (part.type === "reasoning") {
+          reasoning += part.textDelta;
+        }
+      }
+      if (reasoning) console.log(reasoning);
+      return content;
+    }
+
     try {
       if (knowledgeStore.exist(id)) {
         const knowledge = knowledgeStore.get(id);
@@ -124,38 +138,57 @@ function useKnowledge() {
           id,
           status: "processing",
         });
-        const { networkingModel } = getModel();
+
         const text = await fileParser(file);
-        if (text.length > 204800 || !file.type.startsWith("text/")) {
-          let content = "";
-          const result = streamText({
-            model: createProvider(networkingModel),
-            prompt: text,
-            system: rewritingPrompt,
-            onFinish: () => {
+        if (text.length > MAX_CHUNK_LENGTH || !file.type.startsWith("text/")) {
+          const chunks = splitText(text, MAX_CHUNK_LENGTH);
+          for (const idx in chunks) {
+            const chunk = chunks[idx];
+            const index = Number(idx);
+            let rid = id;
+            const names = fileMeta.name.split(".");
+            const filename = `${names[0]}-${index + 1}.${names[1] || "txt"}`;
+
+            if (index > 0) {
+              rid = `${id}_${index}`;
+              addResource({
+                ...omit(fileMeta, ["lastModified"]),
+                id: rid,
+                name: filename,
+                size: getTextByteSize(chunk),
+                status: "processing",
+              });
+            } else {
+              updateResource(rid, {
+                name: filename,
+                size: getTextByteSize(chunk),
+                status: "processing",
+              });
+            }
+
+            let content = "";
+            if (containsXmlHtmlTags(chunk)) {
+              content = await extractText(rid, filename, chunk);
+            } else {
+              content = chunk;
+              // Save to knowledge store for non-XML/HTML content
               const currentTime = Date.now();
               knowledgeStore.save({
-                id,
-                title: fileMeta.name,
+                id: rid,
+                title: filename,
                 content,
                 type: "file",
                 fileMeta,
                 createdAt: currentTime,
                 updatedAt: currentTime,
               });
-            },
-            onError: (err) => {
-              updateResource(id, { status: "failed" });
-              handleError(err);
-            },
-          });
-          for await (const textPart of result.textStream) {
-            content += textPart;
+            }
+            updateResource(rid, {
+              name: filename,
+              size: getTextByteSize(content),
+              status: "completed",
+            });
           }
-          updateResource(id, {
-            size: getTextByteSize(content),
-            status: "completed",
-          });
         } else {
           knowledgeStore.save({
             id,
@@ -229,10 +262,11 @@ function useKnowledge() {
           });
         } else if (crawler === "local") {
           const { networkingModel } = getModel();
-          const result = await localCrawler(url);
+          const { accessPassword } = useSettingStore.getState();
+          const result = await localCrawler(url, accessPassword);
           let content = "";
           const stream = streamText({
-            model: createProvider(networkingModel),
+            model: await createModelProvider(networkingModel),
             prompt: result.content,
             system: rewritingPrompt,
             onFinish: () => {
@@ -247,6 +281,7 @@ function useKnowledge() {
                 updatedAt: currentTime,
               });
             },
+            experimental_transform: smoothTextStream(smoothTextStreamType),
             onError: (err) => {
               updateResource(id, { status: "failed" });
               handleError(err);

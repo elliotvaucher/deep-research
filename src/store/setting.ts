@@ -52,10 +52,12 @@ export interface SettingStore {
   searchProvider: string;
   tavilyApiKey: string;
   tavilyApiProxy: string;
+  tavilyScope: string;
   firecrawlApiKey: string;
   firecrawlApiProxy: string;
   exaApiKey: string;
   exaApiProxy: string;
+  exaScope: string;
   bochaApiKey: string;
   bochaApiProxy: string;
   searxngApiProxy: string;
@@ -65,7 +67,11 @@ export interface SettingStore {
   crawler: string;
   language: string;
   theme: string;
-  debug: string;
+  debug: "enable" | "disable";
+  references: "enable" | "disable";
+  citationImage: "enable" | "disable";
+  smoothTextStreamType: "character" | "word" | "line";
+  onlyUseLocalResource: "enable" | "disable";
 }
 
 interface SettingFunction {
@@ -79,7 +85,7 @@ export const defaultValues: SettingStore = {
   apiKey: "",
   apiProxy: "",
   thinkingModel: "gemini-2.0-flash-thinking-exp",
-  networkingModel: "gemini-2.0-flash-exp",
+  networkingModel: "gemini-2.0-flash",
   openRouterApiKey: "",
   openRouterApiProxy: "",
   openRouterThinkingModel: "",
@@ -124,10 +130,12 @@ export const defaultValues: SettingStore = {
   searchProvider: "model",
   tavilyApiKey: "",
   tavilyApiProxy: "",
+  tavilyScope: "general",
   firecrawlApiKey: "",
   firecrawlApiProxy: "",
   exaApiKey: "",
   exaApiProxy: "",
+  exaScope: "research paper",
   bochaApiKey: "",
   bochaApiProxy: "",
   searxngApiProxy: "",
@@ -138,6 +146,10 @@ export const defaultValues: SettingStore = {
   language: "",
   theme: "system",
   debug: "disable",
+  references: "enable",
+  citationImage: "enable",
+  smoothTextStreamType: "word",
+  onlyUseLocalResource: "disable",
 };
 
 export const useSettingStore = create(
